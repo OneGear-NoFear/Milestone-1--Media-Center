@@ -1,0 +1,89 @@
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Scanner in = new Scanner(System.in);
+        User user = new User("Guest");
+
+        while (true) {
+
+            System.out.println("\n===== MEDIA CENTER =====");
+            System.out.println("1. Add Media");
+            System.out.println("2. View Media");
+            System.out.println("3. Borrow Media");
+            System.out.println("4. Return Media");
+            System.out.println("5. Exit");
+
+            System.out.print("Choose option: ");
+            int choice = in.nextInt();
+            in.nextLine();
+
+            switch (choice) {
+
+                case 1:
+
+                    System.out.print("Enter media type (Movie/Music): ");
+                    String type = in.nextLine();
+
+                    System.out.print("Enter title: ");
+                    String title = in.nextLine();
+
+                    if (type.equalsIgnoreCase("Movie")) {
+
+                        System.out.print("Enter resolution: ");
+                        String resolution = in.nextLine();
+
+                        MediaItem.addMedia(title, type, resolution);
+
+                    } else if (type.equalsIgnoreCase("Music")) {
+
+                        System.out.print("Enter artist: ");
+                        String artist = in.nextLine();
+
+                        MediaItem.addMedia(title, type, artist);
+
+                    } else {
+
+                        System.out.println("Invalid media type.");
+
+                    }
+
+                    break;
+
+                case 2:
+
+                    MediaItem.viewMedia();
+                    break;
+
+                case 3:
+
+                    System.out.print("Enter media ID to borrow: ");
+                    int borrowId = in.nextInt();
+
+                    user.borrowMedia(borrowId);
+
+                    break;
+
+                case 4:
+
+                    System.out.print("Enter media ID to return: ");
+                    int returnId = in.nextInt();
+
+                    user.returnMedia(returnId);
+
+                    break;
+
+                case 5:
+
+                    System.out.println("Goodbye!");
+                    return;
+
+                default:
+
+                    System.out.println("Invalid choice.");
+            }
+        }
+    }
+}
