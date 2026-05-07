@@ -1,1 +1,172 @@
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class MediaItem {
+
+    private static final String URL = "jdbc:sqlite:media.db";
+
+    // CONNECT DATABASE
+    public static Connection connect() {
+
+        try {
+
+            return DriverManager.getConnection(URL);
+
+        } catch (Exception e) {
+
+            System.out.println("Database connection failed.");
+            return null;
+        }
+    }
+
+    // ADD MEDIA
+    public static void addMedia(String title, String type, String extra) {
+
+        String sql = "INSERT INTO media(title, type, extra, available) VALUES(?,?,?,1)";
+
+        try {
+
+            Connection conn = connect();
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, title);
+            stmt.setString(2, type);
+            stmt.setString(3, extra);
+
+            stmt.executeUpdate();
+
+            System.out.println("Media added successfully.");
+
+            conn.close();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    // VIEW MEDIA
+    public static void viewMedia() {
+
+        String sql = "SELECT * FROM media";
+
+        try {
+
+            Connection conn = connect();
+
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            System.out.println("\n===== MEDIA LIST =====");
+
+            while (rs.next()) {
+
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String type = rs.getString("type");
+                String extra = rs.getString("extra");
+                int available = rs.getInt("available");
+
+                String status;
+
+                if (available == 1) {
+                    status = "Available";
+                } else {
+                    status = "Borrowed";
+                }
+
+                System.out.println(
+                        id + " | " +
+                        title + " | " +
+                        type + " | " +
+                        extra + " | " +
+                        status
+                );
+            }
+
+            conn.close();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    // BORROW MEDIA
+    public static boolean borrowMedia(int id) {
+
+        try {
+
+            Connection conn = connect();
+
+            String checkSql = "SELECT available FROM media WHERE id=?";
+
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+
+            checkStmt.setInt(1, id);
+
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+
+                int available = rs.getInt("available");
+
+                if (available == 1) {
+
+                    String updateSql = "UPDATE media SET available=0 WHERE id=?";
+
+                    PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+
+                    updateStmt.setInt(1, id);
+
+                    updateStmt.executeUpdate();
+
+                    conn.close();
+
+                    return true;
+                }
+            }
+
+            conn.close();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // RETURN MEDIA
+    public static boolean returnMedia(int id) {
+
+        try {
+
+            Connection conn = connect();
+
+            String sql = "UPDATE media SET available=1 WHERE id=?";
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setInt(1, id);
+
+            int rows = stmt.executeUpdate();
+
+            conn.close();
+
+            return rows > 0;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+}
