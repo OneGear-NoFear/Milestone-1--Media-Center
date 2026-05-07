@@ -1,1 +1,39 @@
+public class User {
 
+    private String name;
+
+    public User(String name) {
+
+        this.name = name;
+    }
+
+    // BORROW
+    public void borrowMedia(int id) {
+
+        boolean success = MediaItem.borrowMedia(id);
+
+        if (success) {
+
+            System.out.println("Media borrowed successfully.");
+
+        } else {
+
+            System.out.println("Media unavailable or invalid ID.");
+        }
+    }
+
+    // RETURN
+    public void returnMedia(int id) {
+
+        boolean success = MediaItem.returnMedia(id);
+
+        if (success) {
+
+            System.out.println("Media returned successfully.");
+
+        } else {
+
+            System.out.println("Invalid media ID.");
+        }
+    }
+}
